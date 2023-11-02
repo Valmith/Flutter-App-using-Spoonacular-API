@@ -20,6 +20,7 @@ class _MealsScreenState extends State<MealsScreen> {
 Returns aContainer with Curved edges and a BoxShadow.
 The child is a column widget that returns nutrient information in Rows
  */
+
   _buildTotalNutrientsCard() {
     return Container(
       height: 140,
