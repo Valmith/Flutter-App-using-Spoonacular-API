@@ -1,6 +1,5 @@
 //This file will handle all our API calls to the
-//Spoonacular API
-
+//Spoonacular API, hehe
 
 import 'dart:convert';
 import 'dart:io';
@@ -9,13 +8,11 @@ import 'package:spoonacular/model/meal_plan_model.dart';
 import 'package:spoonacular/model/recipe_model.dart';
 
 class ApiService {
-  //The API service will be a singleton, therefore create a private constructor
-  //ApiService._instantiate(), and a static instance variable
   ApiService._instantiate();
   static final ApiService instance = ApiService._instantiate();
 
 
-  //Add base URL for the spoonacular API, endpoint and API Key as a constant
+  //Add base URL for the spoonacular API
   final String _baseURL = "api.spoonacular.com";
   static const String API_KEY ="e1ea9d28071547329684438575c5d5c6";
 
@@ -28,52 +25,83 @@ class ApiService {
   //that's why it's set to day
 
   Future<MealPlan> generateMealPlan({required int targetCalories, required String diet}) async {
-    //check if diet is null
-    if (diet == 'None') diet = '';
+  try {
+    print('generateMealPlan - Start');
+    print('targetCalories: $targetCalories, diet: $diet');
+
+    // Check if diet is null or empty, and set it to an empty string if necessary
+    if (diet == null || diet.isEmpty) {
+      diet = '';
+    }
+
+    // Check if targetCalories is not null
+    if (targetCalories == null) {
+      throw 'Target calories cannot be null.';
+    }
+
+    // Construct the parameters
     Map<String, String> parameters = {
-      'timeFrame': 'day', //to get 3 meals
+      'timeFrame': 'day',
       'targetCalories': targetCalories.toString(),
       'diet': diet,
       'apiKey': API_KEY,
     };
 
-
-    //The Uri consists of the base url, the endpoint we are going to use. It has also
-    //parameters
+    // Construct the URI
     Uri uri = Uri.https(
       _baseURL,
       '/recipes/mealplans/generate',
       parameters,
     );
 
-
-    //Our header specifies that we want the request to return a json object
+    // Set the headers
     Map<String, String> headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
     };
 
+    // Make the API request
+    var response = await http.get(uri, headers: headers);
 
-    /*
-    Our try catch uses http.get to retrieve response.
-    It then decodes the body of the response into a map,
-    and converts the map into a mealPlan object
-    by using the facory constructor MealPlan.fromMap
-    */
-    try {
-      //http.get to retrieve the response
-      var response = await http.get(uri, headers: headers);
-      //decode the body of the response into a map
-      Map<String, dynamic> data = json.decode(response.body);
-      print(data);
-      //convert the map into a MealPlan Object using the factory constructor,
-      //MealPlan.fromMap
+    // Check if the response status code is OK (200)
+    if (response.statusCode == 200) {
+      // Decode the response body into a map
+      Map<String, dynamic>? data = json.decode(response.body);
+      print('API Response Data: $data');
+
+      // Check if the 'meals' key exists in the response
+if (data != null && data.containsKey('meals')) {
+  // Check if 'nutrients' key exists in the response
+  if (data.containsKey('nutrients')) {
+    // Ensure that individual nutrient values are not null
+    double? fat = data['nutrients']['fat'];
+    double? carbohydrates = data['nutrients']['carbohydrates'];
+    double? calories = data['nutrients']['calories'];
+    double? protein = data['nutrients']['protein'];
+
+    if (fat != null && carbohydrates != null && calories != null && protein != null) {
+      // Convert the map into a MealPlan object
       MealPlan mealPlan = MealPlan.fromMap(data);
+      print('generateMealPlan - End');
       return mealPlan;
-    } catch (err) {
-      //If our response has error, we throw an error message
-      throw err.toString();
+    } else {
+      throw 'One or more nutrient values are null.';
     }
+  } else {
+    throw 'Response does not contain the expected "nutrients" data structure.';
   }
+} else {
+  throw 'Response does not contain the expected "meals" data structure.';
+}
+    } else {
+      throw 'Error: ${response.statusCode}';
+    }
+  } catch (err) {
+    // If an error occurs during the process, throw an error message
+    print('generateMealPlan - Error: $err');
+    throw err.toString();
+  }
+}
+
 
 
   //the fetchRecipe takes in the id of the recipe we want to get the info for
