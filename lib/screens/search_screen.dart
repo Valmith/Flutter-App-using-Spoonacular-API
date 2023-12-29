@@ -18,7 +18,7 @@ class _SearchScreenState extends State<SearchScreen> {
   */
 
   List<String> _diets = [
-    //List of diets that lets spoonacular filter
+    //List of diets that lets spoonacular API filter out the recipes
     'None',
     'Gluten Free',
     'Ketogenic',
@@ -46,7 +46,6 @@ class _SearchScreenState extends State<SearchScreen> {
       builder: (_) => MealsScreen(mealPlan: mealPlan),
     ));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +78,7 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                //Text widget for our app's title
+                //Text widget for the app's title
                 const Text(
                   'My Daily Meal Planner',
                   style: TextStyle(fontSize: 32,
@@ -109,7 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ]
                   ),
                 ),
-                //Orange slider that sets our target calories
+                //Orange slider that sets the target calories
                 SliderTheme(
                   data: SliderTheme.of(context).copyWith(
                     thumbColor: Theme.of(context).primaryColor,
@@ -126,7 +125,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   ),
                 ),
-                //Simple drop down to select the type of diet
+                //Simple drop down to select the type of diet for filtering
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: DropdownButtonFormField(

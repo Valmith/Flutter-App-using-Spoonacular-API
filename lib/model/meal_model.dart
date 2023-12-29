@@ -17,11 +17,13 @@ values of the meal, and returns the Meal Object
 */
 
   factory Meal.fromMap(Map<String, dynamic> map) {
-    //Meal object
-    return Meal(
-      id: map['id'],
-      title: map['title'],
-      imgURL: 'https://spoonacular.com/recipeImages/' + map['image'],
-    );
-  }
+  return Meal(
+    id: map['id'] ?? 0, // Provide a default value if 'id' is null
+    title: map['title'] ?? '', // Provide a default value if 'title' is null
+    imgURL: map['image'] != null
+        ? 'https://spoonacular.com/recipeImages/' + map['image']
+        : '', // Provide a default value or handle null 'image'
+  );
+}
+
 }

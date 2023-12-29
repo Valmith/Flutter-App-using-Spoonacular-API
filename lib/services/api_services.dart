@@ -77,7 +77,9 @@ if (data != null && data.containsKey('meals')) {
     double? carbohydrates = data['nutrients']['carbohydrates'];
     double? calories = data['nutrients']['calories'];
     double? protein = data['nutrients']['protein'];
-
+    
+    print("THIS IS TO SEE IF THE NUTRIENTS ARE IN "'Fat: $fat, Carbohydrates: $carbohydrates, Calories: $calories, Protein: $protein');
+  
     if (fat != null && carbohydrates != null && calories != null && protein != null) {
       // Convert the map into a MealPlan object
       MealPlan mealPlan = MealPlan.fromMap(data);

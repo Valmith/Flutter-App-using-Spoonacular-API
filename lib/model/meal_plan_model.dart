@@ -22,10 +22,34 @@ data and creates a list of meals.
 Then, we return MealPlan object with all the information
 */
 
-  factory MealPlan.fromMap(Map<String, dynamic> map) {
+  // factory MealPlan.fromMap(Map<String, dynamic> map) {
+  //   List<Meal> meals = [];
+  //   map['meals'].forEach((mealMap) => meals.add(Meal.fromMap(mealMap)));
+  //   //MealPlan object with information we want
+  //   return MealPlan(
+  //     meals: meals,
+  //     calories: map['nutrients']['calories'],
+  //     carbs: map['nutrients']['carbohydrates'],
+  //     fat: map['nutrients']['fat'],
+  //     protein: map['nutrients']['protein'],
+  //   );
+  // }
+
+factory MealPlan.fromMap(Map<String, dynamic> map) {
+  try {
     List<Meal> meals = [];
-    map['meals'].forEach((mealMap) => meals.add(Meal.fromMap(mealMap)));
-    //MealPlan object with information we want
+    if (map.containsKey('meals')) {
+      map['meals'].forEach((mealMap) {
+        try {
+          meals.add(Meal.fromMap(mealMap));
+        } catch (e) {
+          print('Error creating Meal object: $e');
+        }
+      });
+    } else {
+      print('API response does not contain meals.');
+    }
+
     return MealPlan(
       meals: meals,
       calories: map['nutrients']['calories'],
@@ -33,7 +57,10 @@ Then, we return MealPlan object with all the information
       fat: map['nutrients']['fat'],
       protein: map['nutrients']['protein'],
     );
+  } catch (e) {
+    print('Error creating MealPlan object: $e');
+    rethrow;
   }
-
+}
 
 }
