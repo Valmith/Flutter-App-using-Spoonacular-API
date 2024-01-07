@@ -11,13 +11,14 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   /*
-  Our state has three parameters.
+  Our state has 4 parameters.
   diets - list of diet that the spoonacular api let's us filter by,
   targetCalories - desired number of calories we want our mealplan to reach
   diet - our selected diet
+  labelSearch - the labels from camera module
   */
 
-  List<String> _diets = [
+  final List<String> _diets = [
     //List of diets that lets spoonacular API filter out the recipes
     'None',
     'Gluten Free',
@@ -33,6 +34,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   double _targetCalories = 2250;
   String _diet = 'None';
+  final String _labelSearch = 'none'; //set to none for now but need to reference from camera module
 
   //This method generates a MealPlan by parsing our parameters into the
   //ApiService.instance.generateMealPlan.
@@ -41,6 +43,7 @@ class _SearchScreenState extends State<SearchScreen> {
     MealPlan mealPlan = await ApiService.instance.generateMealPlan(
       targetCalories: _targetCalories.toInt(),
       diet: _diet,
+      labelSearch: _labelSearch, //NEW PARAMETER
     );
     Navigator.push(context, MaterialPageRoute(
       builder: (_) => MealsScreen(mealPlan: mealPlan),

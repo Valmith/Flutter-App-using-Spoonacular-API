@@ -1,4 +1,4 @@
-//This file will handle all our API calls to the
+//This will handle all our API calls to the
 //Spoonacular API, hehe
 
 import 'dart:convert';
@@ -24,10 +24,16 @@ class ApiService {
   //timeFrame parameter sets our meals into 3 meals, which are daily meals.
   //that's why it's set to day
 
-  Future<MealPlan> generateMealPlan({required int targetCalories, required String diet}) async {
+  Future<MealPlan> generateMealPlan({required int targetCalories, required String diet, required String labelSearch}) async {
   try {
     print('generateMealPlan - Start');
-    print('targetCalories: $targetCalories, diet: $diet');
+    print('targetCalories: $targetCalories, diet: $diet, labels: $labelSearch');
+
+    // Check if labels are there or not. if it aint, sets it to empty if necessary
+    if (labelSearch == null || labelSearch.isEmpty){
+      labelSearch = '';
+    }
+
 
     // Check if diet is null or empty, and set it to an empty string if necessary
     if (diet == null || diet.isEmpty) {
@@ -44,8 +50,16 @@ class ApiService {
       'timeFrame': 'day',
       'targetCalories': targetCalories.toString(),
       'diet': diet,
+      'ingredients': labelSearch,
       'apiKey': API_KEY,
     };
+
+
+    Uri uri = Uri.https(
+      _baseURL,
+      '/recipes/findByIngredients',
+      parameters,
+    );
 
     // Construct the URI
     Uri uri = Uri.https(
@@ -103,8 +117,6 @@ if (data != null && data.containsKey('meals')) {
     throw err.toString();
   }
 }
-
-
 
   //the fetchRecipe takes in the id of the recipe we want to get the info for
   //We also specify in the parameters that we don't want to include the nutritional
