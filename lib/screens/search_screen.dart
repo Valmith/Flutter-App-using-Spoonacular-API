@@ -17,7 +17,7 @@ class _SearchScreenState extends State<SearchScreen> {
   diet - our selected diet
   */
 
-  List<String> _diets = [
+  final List<String> _diets = [
     //List of diets that lets spoonacular API filter out the recipes
     'None',
     'Gluten Free',
@@ -33,19 +33,42 @@ class _SearchScreenState extends State<SearchScreen> {
 
   double _targetCalories = 2250;
   String _diet = 'None';
+  final String _labelSearch = 'none'; //NEW THING ADDED TO RECIEVE LABELS FROM THE CAMERA
+//EDIT THIS AREA, or the API_services as needed to get the labels from the camera module to here
+
 
   //This method generates a MealPlan by parsing our parameters into the
   //ApiService.instance.generateMealPlan.
   //It then pushes the Meal Screen onto the stack with Navigator.push
+
   void _searchMealPlan() async {
-    MealPlan mealPlan = await ApiService.instance.generateMealPlan(
+  try {
+    // Fetch recipes based on detected labels
+    List<dynamic> recipes = await ApiService.instance.fetchRecipesByIngredients([_labelSearch]);
+    
+    // Extract recipe IDs from the fetched recipes
+    List<int> recipeIds = recipes.map<int>((recipe) => recipe['id']).toList();
+    
+    // Generate meal plan using filtered ingredients and other parameters
+    MealPlan mealPlan = await ApiService.instance.generateMealPlanWithFilteredIngredients(
       targetCalories: _targetCalories.toInt(),
       diet: _diet,
+      labelSearch: [_labelSearch], // Pass detected label for filtering
     );
-    Navigator.push(context, MaterialPageRoute(
-      builder: (_) => MealsScreen(mealPlan: mealPlan),
-    ));
+
+    // Navigate to MealsScreen with the generated meal plan and filtered recipes
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MealsScreen(mealPlan: mealPlan, recipes: recipeIds),
+      ),
+    );
+  } catch (error) {
+    // Handle errors gracefully
+    print('Error fetching recipes or generating meal plan: $error');
+    // Show a snackbar or error message to the user
   }
+}
 
   @override
   Widget build(BuildContext context) {

@@ -8,7 +8,7 @@ import 'package:spoonacular/services/api_services.dart';
 class MealsScreen extends StatefulWidget {
   //It returns a final mealPlan variable
   final MealPlan mealPlan;
-  MealsScreen({required this.mealPlan});
+  MealsScreen({required this.mealPlan, required List<int> recipes});
 
   @override
   _MealsScreenState createState() => _MealsScreenState();
